@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<title>Voice Out</title>
+<style>
+#audio {
+  width: 100%;
+}
+td {
+  text-align: center;
+  border: 1px solid #ccc;
+}
+#ll, #lr, #rl, #rr {
+  text-align: right;
+}
+</style>
+<body>
+
+<h1>Voice Out - an HTML5 Web Audio API Demo</h1>
+
+<p>This web application lets you play a song and filter out voice
+(and some other instruments) in real time.</p>
+
+<ul>
+  <li>Only tested on <strong>Google Chrome</strong>.
+  <li>The file must be <strong>stereo</strong>.
+  <li>The file must have <strong>resonable quality</strong>.
+</ul>
+
+<p>Please select an audio file <input type="file" id="file"></p>
+
+<p><audio controls id="audio"></audio></p>
+
+<p><label><input type="checkbox" id="filter"> Filter Sound</label></p>
+
+<p>
+This application works by subtracting the wave of the right channel
+from the left channel.
+Most songs have the vocal track (and bass, and lead guitar) on the center,
+so the waveform of these sounds are the same in both left and right channel.
+When we subtract one from another, they interfere destructively,
+thus removing the sound.
+</p>
+
+<table>
+  <tr>
+    <th>Src Channel
+    <th>Dest Channel
+    <th>Volume
+  <tr><td>Left<td>Left<td id="ll">
+  <tr><td>Left<td>Right<td id="lr">
+  <tr><td>Right<td>Left<td id="rl">
+  <tr><td>Right<td>Right<td id="rr">
+</table>
+
+<script>
+
+window.onload = function() {
+
+  var audio = document.getElementById('audio')
+  var input = document.getElementById('file')
+  input.onchange = function() {
+    var file = input.files[0]
+    audio.src = URL.createObjectURL(file)
+  }
+
+  var context = new webkitAudioContext()
+
+  var source = context.createMediaElementSource(audio)
+
+  var splitter = context.createChannelSplitter(2)
+  source.connect(splitter)
+
+  var left = context.createGain()
+  var right = context.createGain()
+  splitter.connect(left, 0)
+  splitter.connect(right, 1)
+
+  var leftToLeft = context.createGain()
+  var leftToRight = context.createGain()
+  var rightToLeft = context.createGain()
+  var rightToRight = context.createGain()
+
+  left.connect(leftToLeft)
+  left.connect(leftToRight)
+  right.connect(rightToLeft)
+  right.connect(rightToRight)
+
+  function setVolume(ll, lr, rl, rr) {
+    leftToLeft.gain.value = ll
+    leftToRight.gain.value = lr
+    rightToLeft.gain.value = rl
+    rightToRight.gain.value = rr
+    updateHtml({ ll: ll, lr: lr, rl: rl, rr: rr })
+  }
+
+  function updateHtml(obj) {
+    for (var i in obj) {
+      document.getElementById(i).innerHTML = Math.round(100 * obj[i]) + '%'
+    }
+  }
+
+  var merger = context.createChannelMerger(2)
+  leftToLeft.connect(merger, 0, 0)
+  leftToRight.connect(merger, 0, 1)
+  rightToLeft.connect(merger, 0, 0)
+  rightToRight.connect(merger, 0, 1)
+
+  merger.connect(context.destination)
+
+
+  var checkbox = document.getElementById('filter')
+  checkbox.onchange = function() {
+    updateVolume()
+  }
+
+  function updateVolume() {
+    if (checkbox.checked) {
+      setVolume(0.5, 0.5, -0.5, -0.5)   // filter sound
+    } else {
+      setVolume(1, 0, 0, 1)             // do not filter sound
+    }
+  }
+
+  updateVolume()
+
+}
+
+</script>
+</body>
