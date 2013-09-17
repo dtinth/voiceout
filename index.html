@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <title>Voice Out</title>
+<link href="http://dt.in.th/css-base.css" rel="stylesheet" />
 <style>
 #audio {
   width: 100%;
@@ -14,6 +15,7 @@ td {
 </style>
 <body>
 
+<div class="wrapper">
 <h1>Voice Out - an HTML5 Web Audio API Demo
 // <a href="https://github.com/dtinth/voiceout">on GitHub</a></h1>
 
@@ -26,11 +28,27 @@ td {
   <li>The file must have <strong>resonable quality</strong>.
 </ul>
 
+<hr>
+<h2>Select an Audio File</h2>
+
 <p>Please select an audio file <input type="file" id="file"></p>
 
 <p><audio controls id="audio"></audio></p>
 
 <p><label><input type="checkbox" id="filter"> Filter Sound</label></p>
+
+<table>
+  <tr>
+    <th>Src Channel
+    <th>Dest Channel
+    <th>Volume
+  <tr><td>Left<td>Left<td id="ll">
+  <tr><td>Left<td>Right<td id="lr">
+  <tr><td>Right<td>Left<td id="rl">
+  <tr><td>Right<td>Right<td id="rr">
+</table>
+
+<hr>
 
 <p>
 This application works by subtracting the wave of the right channel
@@ -45,16 +63,7 @@ thus removing the sound.
 center-panned (meaning they too will be filtered out):
 Bass, Kick Drum, Lead Guitar</p>
 
-<table>
-  <tr>
-    <th>Src Channel
-    <th>Dest Channel
-    <th>Volume
-  <tr><td>Left<td>Left<td id="ll">
-  <tr><td>Left<td>Right<td id="lr">
-  <tr><td>Right<td>Left<td id="rl">
-  <tr><td>Right<td>Right<td id="rr">
-</table>
+</div>
 
 <script>
 
