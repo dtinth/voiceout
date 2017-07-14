@@ -76,7 +76,7 @@ window.onload = function() {
     audio.src = URL.createObjectURL(file)
   }
 
-  var context = new webkitAudioContext()
+  var context = new AudioContext()
 
   var source = context.createMediaElementSource(audio)
 
